@@ -70,9 +70,9 @@ if __name__ == '__main__':
     test_path = os.path.join(DATASET_PATH, 'test', 'test_label')
     class_acc, class_sens, class_spec, ttl_acc, ttl_sens, ttl_spec = evaluation_metrics(num_classes, config.prediction, test_path)
 
-    #for i in range(num_classes):
-    #    print(' < Class {} >\nAccuracy= {}\n Sensitivity = {}\n Specificity = {}\n'.format(classes[i], class_acc[i], class_sens[i], class_spec[i]))
-    #print(' << Total Performance >>\nAccuracy = {}\nSensitivity = {}\nSpecificity = {}'.format(ttl_acc, ttl_sens, ttl_spec))
+    for i in range(num_classes):
+        print(' < Class {} >\nAccuracy= {}\n Sensitivity = {}\n Specificity = {}\n'.format(classes[i], class_acc[i], class_sens[i], class_spec[i]))
+    print(' << Total Performance >>\nAccuracy = {}\nSensitivity = {}\nSpecificity = {}'.format(ttl_acc, ttl_sens, ttl_spec))
 
     res_acc = round(ttl_acc, 4) * 100
     res_sens = round(ttl_sens, 4) / 100

@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 import keras
 
+
 from keras.utils import np_utils
 from sklearn.model_selection import train_test_split
 from keras.models import Sequential
@@ -20,6 +21,23 @@ import keras.backend.tensorflow_backend as K
 import nsml
 from nsml.constants import DATASET_PATH, GPU_NUM
 
+from efficientnet.efficientnet import keras as efn
+
+def Efficientnet(model_name, in_shape, num_classes = 4, pooling = True):
+    "width_coefficient = beta, depth_coefficient = alpha, resolution = gamma, dropout_rate"
+
+    params_dict = {
+        "efficientnet-b0" : efn.EfficientNetB0(input_Shape = in_shape, classes = num_classes, pooling = pooling, weight = None),
+        "efficientnet-b1" : efn.EfficientNetB1(input_Shape = in_shape, classes = num_classes, pooling = pooling, weight = None),
+        "efficientnet-b2" : efn.EfficientNetB2(input_Shape = in_shape, classes = num_classes, pooling = pooling, weight = None),
+        "efficientnet-b3" : efn.EfficientNetB3(input_Shape = in_shape, classes = num_classes, pooling = pooling, weight = None),
+        "efficientnet-b4" : efn.EfficientNetB4(input_Shape = in_shape, classes = num_classes, pooling = pooling, weight = None),
+        "efficientnet-b5" : efn.EfficientNetB5(input_Shape = in_shape, classes = num_classes, pooling = pooling, weight = None),
+        "efficientnet-b6" : efn.EfficientNetB6(input_Shape = in_shape, classes = num_classes, pooling = pooling, weight = None),
+        "efficientnet-b7" : efn.EfficientNetB7(input_Shape = in_shape, classes = num_classes, pooling = pooling, weight = None),
+    }
+
+    return params_dict[model_name]
 
 
 def cnn_sample(in_shape, num_classes=4):    # Example CNN
