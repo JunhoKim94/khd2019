@@ -15,11 +15,11 @@ from keras import optimizers
 from keras.utils.training_utils import multi_gpu_model
 
 from model import cnn_sample, Efficientnet # must be repaired
-from dataprocessing import image_preprocessing, dataset_loader, CutmixGen, apply_cutmix
+from dataprocessing import image_preprocessing, dataset_loader, cutmix_gen, apply_cutmix
 from efficientnet.efficientnet import keras as efn
 
 ## setting values of preprocessing parameters
-RESIZE = 8.
+RESIZE = 10.
 RESCALE = True
 
 TARGET_RESOLUTION =  int(3900//RESIZE), int(3072//RESIZE)
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     args = argparse.ArgumentParser()
 
     # hyperparameters
-    args.add_argument('--epoch', type=int, default=40)                          # epoch 수 설정
+    args.add_argument('--epoch', type=int, default=45)                          # epoch 수 설정
     args.add_argument('--batch_size', type=int, default=16)                      # batch size 설정
     args.add_argument('--num_classes', type=int, default=4)                     # DO NOT CHANGE num_classes, class 수는 항상 4
 
@@ -160,9 +160,16 @@ if __name__ == '__main__':
             print('check point = {}'.format(epoch))
 
             x_,y_ = apply_cutmix(x_train,y_train, batch_size = batch_size)
+            #x_, y_ = cutmix_gen(x_train, y_train,batch_size = 8)
+
+            #x_, y_ = x_train, y_train
+
 
             hist = model.fit(x_, y_,validation_data=(x_val, y_val), batch_size=batch_size)
-                             
+
+            del x_
+            del y_
+
             t2 = time.time()
             print(hist.history)
             print('Training time for one epoch : %.1f' % ((t2 - t1)))

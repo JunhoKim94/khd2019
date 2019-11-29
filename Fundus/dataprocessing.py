@@ -18,8 +18,10 @@ def image_preprocessing(image, target_resolution, normalize):
                          target_resolution,
                          interpolation=cv2.INTER_AREA)
 
-    if normalize == True:
+    '''   
+     if normalize == True:
         res = res / 255.
+    '''
 
     return res
 
@@ -62,7 +64,7 @@ def dataset_loader(img_path,
         l = Label2Class(p.split('/')[-2])
         labels.append(l)
 
-    images = np.array(images)
+    images = (np.array(images)/255.).astype(np.float32)
     labels = np.array(labels)
 
     t2 = time.time()
@@ -81,7 +83,7 @@ def cutmix(x, y):
     
     lmbda = np.random.uniform()
     sqrt_lmbda = np.sqrt(lmbda)
-    rand_index = np.random.permutation(batch_size)
+    #rand_index = np.random.permutation(batch_size)
 
     offset_x = int(width * sqrt_lmbda)
     offset_y = int(height * sqrt_lmbda)
@@ -122,17 +124,24 @@ def cutmix_gen(x, y, batch_size=32):
         y_batch = y[i*batch_size:(i+1)*batch_size]
         yield cutmix(x_batch, y_batch)
 
+
 def apply_cutmix(x, y, batch_size=32):
-    total = x.shape[0]
-    xs, ys = [], []
+    total, height, width, chan = x.shape
+    new_total = total - (total % batch_size)
+    xs = np.zeros(shape=(new_total, height, width, chan),
+                  dtype=np.float32)
+    ys = np.zeros(shape=(new_total, y.shape[-1]),
+                  dtype=np.float32)
 
     for i in range(total//batch_size):
         x_batch = x[i*batch_size:(i+1)*batch_size]
         y_batch = y[i*batch_size:(i+1)*batch_size]
-        xs.append(x_batch)
-        ys.append(y_batch)
-    
-    return np.concatenate(xs, axis=0), np.concatenate(ys, axis=0)
+        x_batch, y_batch = cutmix(x_batch, y_batch)
+        
+        xs[i*batch_size:(i+1)*batch_size] = x_batch
+        ys[i*batch_size:(i+1)*batch_size] = y_batch
+        
+    return xs, ys
 
 
 class CutmixGen(keras.utils.Sequence):
